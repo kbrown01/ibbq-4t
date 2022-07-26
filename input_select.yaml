@@ -1,0 +1,22 @@
+meat_types:
+   name: Meat
+   options:
+     - Poultry
+     - Pig
+     - Lamb
+     - Beef
+     - Venison
+     - Alligator
+   initial: Pig
+   icon: mdi:cow
+
+meat_temps:
+    name: Doneness
+    options:
+      - Rare
+      - Medium-Rare
+      - Medium
+      - Medium-Well
+      - Well
+    initial: Rare
+    icon: mdi:fire

@@ -1,0 +1,315 @@
+  - title: Cooking
+    path: cooking
+    icon: mdi:pot-steam-outline
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            title: iBBQ Temperature Settings
+            entities:
+              - type: section
+                label: Probe Set Temperatures
+              - type: custom:slider-entity-row
+                entity: input_number.ibbq_target_probe_1
+                state: >-
+                  {{states('input_number.ibbq_target_probe_1') | round | int}}
+                  ºF
+                name: IBBQ Set Temp 1
+                icon: mdi:thermometer
+                condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+              - type: custom:slider-entity-row
+                entity: input_number.ibbq_target_probe_2
+                state: >-
+                  {{states('input_number.ibbq_target_probe_2') | round | int}}
+                  ºF
+                name: IBBQ Set Temp 2
+                icon: mdi:thermometer
+                condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+              - type: custom:slider-entity-row
+                entity: input_number.ibbq_target_probe_3
+                icon: mdi:thermometer
+                state: >-
+                  {{states('input_number.ibbq_target_probe_3') | round | int}}
+                  ºF
+                name: IBBQ Set Temp 3
+                condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+              - type: custom:slider-entity-row
+                entity: input_number.ibbq_target_probe_4
+                icon: mdi:thermometer
+                state: >-
+                  {{states('input_number.ibbq_target_probe_4') | round | int}}
+                  ºF
+                name: IBBQ Set Temp 4
+                condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+              - type: section
+                label: Set All Probes (either select meat and doneness or direct)
+              - type: conditional
+                conditions:
+                  - entity: binary_sensor.ibbq_power
+                    state: 'on'
+                row:
+                  entity: input_select.meat_types
+              - type: conditional
+                conditions:
+                  - entity: binary_sensor.ibbq_power
+                    state: 'on'
+                row:
+                  entity: input_select.meat_temps
+              - type: conditional
+                conditions:
+                  - entity: binary_sensor.ibbq_power
+                    state: 'on'
+                row:
+                  type: custom:slider-entity-row
+                  entity: input_number.ibbq_target_probe_all
+                  hide_state: false
+                  name: Direct Set
+              - type: section
+                label: Set iBBQ Check Timer
+              - type: conditional
+                conditions:
+                  - entity: binary_sensor.ibbq_power
+                    state: 'on'
+                row:
+                  type: custom:slider-entity-row
+                  entity: input_number.ibbq_timer_setting
+                  hide_state: false
+                  name: Set Time
+              - type: conditional
+                conditions:
+                  - entity: binary_sensor.ibbq_power
+                    state: 'on'
+                row:
+                  entity: input_boolean.ibbqtimeswitch
+      - type: entities
+        title: iBBQ Temperature System
+        show_header_toggle: false
+        entities:
+          - type: section
+            label: Probe Temperatures
+          - type: custom:template-entity-row
+            state: |
+              {% if states('sensor.ibbq_probe_1') != 'unavailable' %}
+                {{states('sensor.ibbq_probe_1') | int }} ºF
+              {% else %}
+                - - -
+              {% endif %}
+            name: IBBQ Probe 1
+            icon: mdi:thermometer
+            condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+            style: |
+              state-badge{
+                {% if states('sensor.ibbq_probe_1') | int > states('input_number.ibbq_target_probe_1') | round | int %}
+                color:red
+                {% else %}
+                color:green
+                {% endif %}
+              } #wrapper{
+                {% if states('sensor.ibbq_probe_1') | int > states('input_number.ibbq_target_probe_1') | round | int %}
+                background-color:firebrick
+                {% endif %}
+              }
+            state_color: false
+          - type: custom:template-entity-row
+            state: |
+              {% if states('sensor.ibbq_probe_2') != 'unavailable' %}
+                {{states('sensor.ibbq_probe_2') | int }} ºF
+              {% else %}
+                - - -
+              {% endif %}
+            name: IBBQ Probe 2
+            icon: mdi:thermometer
+            condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+            style: |
+              state-badge{
+                {% if states('sensor.ibbq_probe_2') | int > states('input_number.ibbq_target_probe_2') | round | int %}
+                color:red
+                {% else %}
+                color:green
+                {% endif %}
+              } #wrapper{
+                {% if states('sensor.ibbq_probe_2') | int > states('input_number.ibbq_target_probe_2') | round | int %}
+                background-color:firebrick
+                {% endif %}
+              }
+          - type: custom:template-entity-row
+            condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+            icon: mdi:thermometer
+            state: |
+              {% if states('sensor.ibbq_probe_3') != 'unavailable' %}
+                {{states('sensor.ibbq_probe_3') | int }} ºF
+              {% else %}
+                - - -
+              {% endif %}
+            name: IBBQ Probe 3
+            style: |
+              state-badge{
+                {% if states('sensor.ibbq_probe_3') | int > states('input_number.ibbq_target_probe_3') | round | int %}
+                color:red
+                {% else %}
+                color:green
+                {% endif %}
+              } #wrapper{
+                {% if states('sensor.ibbq_probe_3') | int > states('input_number.ibbq_target_probe_3') | round | int %}
+                background-color:firebrick
+                {% endif %}
+              }
+          - type: custom:template-entity-row
+            icon: mdi:thermometer
+            state: |
+              {% if states('sensor.ibbq_probe_4') != 'unavailable' %}
+                {{states('sensor.ibbq_probe_4') | int }} ºF
+              {% else %}
+                - - -
+              {% endif %}
+            name: IBBQ Probe 4
+            condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+            style: |
+              state-badge{
+                {% if states('sensor.ibbq_probe_4') | int > states('input_number.ibbq_target_probe_4') | round | int %}
+                color:red
+                {% else %}
+                color:green
+                {% endif %}
+              } #wrapper{
+                {% if states('sensor.ibbq_probe_4') | int > states('input_number.ibbq_target_probe_4') | round | int %}
+                background-color:firebrick
+                {% endif %}
+              }
+          - type: section
+            label: Device Information
+          - type: custom:template-entity-row
+            icon: >
+              {% if (states('sensor.ibbq_battery_level') | round | int) > 1000
+              %}
+                mdi:battery-charging
+              {% else %}
+               mdi:battery
+              {% endif %}
+            state: >
+              {% if (states('sensor.ibbq_battery_level') | round | int) > 1000
+              %}
+                Charging ({{states('sensor.ibbq_battery_level')| round//1000  | int  }}%)
+              {% else %}
+               {{states('sensor.ibbq_battery_level') | round | int}} %
+              {% endif %}
+            style: |
+              state-badge{
+                {% if (states('sensor.ibbq_battery_level') | round | int) < 25 %}
+                color:red
+                {% else %}
+                color:green
+                {% endif %}
+              }
+            name: IBBQ Battery Level
+            condition: '{{states(''binary_sensor.ibbq_power'') == ''on''}} '
+          - type: section
+            label: Check iBBQ
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.ibbq_power
+                state: 'on'
+            row:
+              type: custom:timer-bar-card
+              entity: timer.ibbq_timer
+              state_color: true
+      - type: vertical-stack
+        cards:
+          - type: conditional
+            conditions:
+              - entity: sensor.ibbq_probe_1
+                state_not: unavailable
+            card:
+              type: custom:config-template-card
+              entities:
+                - input_number.ibbq_target_probe_1
+                - sensor.ibbq_probe_1
+              variables:
+                - states['input_number.ibbq_target_probe_1'].state * 1
+                - states['input_number.ibbq_target_probe_1'].state * .8
+                - states['input_number.ibbq_target_probe_1'].state * .9
+              card:
+                type: gauge
+                name: ${'Probe 1 (Set Temp ' + vars[0] + '°F)'}
+                entity: sensor.ibbq_probe_1
+                min: 0
+                max: ${vars[0]}
+                severity:
+                  green: 0
+                  yellow: ${vars[1]}
+                  red: ${vars[2]}
+                needle: true
+          - type: conditional
+            conditions:
+              - entity: sensor.ibbq_probe_2
+                state_not: unavailable
+            card:
+              type: custom:config-template-card
+              entities:
+                - input_number.ibbq_target_probe_2
+                - sensor.ibbq_probe_2
+              variables:
+                - states['input_number.ibbq_target_probe_2'].state * 1
+                - states['input_number.ibbq_target_probe_2'].state * .8
+                - states['input_number.ibbq_target_probe_2'].state * .9
+              card:
+                type: gauge
+                name: ${'Probe 2 (Set Temp ' + vars[0] + '°F)'}
+                entity: sensor.ibbq_probe_2
+                min: 0
+                max: ${vars[0]}
+                severity:
+                  green: 0
+                  yellow: ${vars[1]}
+                  red: ${vars[2]}
+                needle: true
+          - type: conditional
+            conditions:
+              - entity: sensor.ibbq_probe_3
+                state_not: unavailable
+            card:
+              type: custom:config-template-card
+              entities:
+                - input_number.ibbq_target_probe_3
+                - sensor.ibbq_probe_3
+              variables:
+                - states['input_number.ibbq_target_probe_3'].state * 1
+                - states['input_number.ibbq_target_probe_3'].state * .8
+                - states['input_number.ibbq_target_probe_3'].state * .9
+              card:
+                type: gauge
+                name: ${'Probe 3 (Set Temp ' + vars[0] + '°F)'}
+                entity: sensor.ibbq_probe_3
+                min: 0
+                max: ${vars[0]}
+                severity:
+                  green: 0
+                  yellow: ${vars[1]}
+                  red: ${vars[2]}
+                needle: true
+          - type: conditional
+            conditions:
+              - entity: sensor.ibbq_probe_4
+                state_not: unavailable
+            card:
+              type: custom:config-template-card
+              entities:
+                - input_number.ibbq_target_probe_4
+                - sensor.ibbq_probe_4
+              variables:
+                - states['input_number.ibbq_target_probe_4'].state * 1
+                - states['input_number.ibbq_target_probe_4'].state * .8
+                - states['input_number.ibbq_target_probe_4'].state * .9
+              card:
+                type: gauge
+                name: ${'Probe 4 (Set Temp ' + vars[0] + '°F)'}
+                entity: sensor.ibbq_probe_1
+                min: 0
+                max: ${vars[0]}
+                severity:
+                  green: 0
+                  yellow: ${vars[1]}
+                  red: ${vars[2]}
+                needle: true
+

@@ -1,0 +1,176 @@
+#
+# Set all probes to same temperature if directly changing the "all" probe temperature
+#
+- id: '1626830122913'
+  alias: Set iBBQ Target Temps
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_number.ibbq_target_probe_all
+  condition: []
+  action:
+  - service: input_number.set_value
+    data_template:
+      entity_id:
+      - input_number.ibbq_target_probe_1
+      - input_number.ibbq_target_probe_2
+      - input_number.ibbq_target_probe_3
+      - input_number.ibbq_target_probe_4
+      value: '{{ states.input_number.ibbq_target_probe_all.state | int }}'
+  mode: single
+#
+# Create and start a timer if input_boolean iibqtimeswitch is set to 'on'
+#
+- id: '1626894736185'
+  alias: Set iBBQ Timer
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.ibbqtimeswitch
+    to: 'on'
+  condition: []
+  action:
+  - service: timer.start
+    data:
+      duration: '{{ (states.input_number.ibbq_timer_setting.state | int) * 60 }}'
+    target:
+      entity_id: timer.ibbq_timer
+  mode: single
+#
+# Cancel timer if input_boolean iibqtimeswitch is set to 'off'
+#
+
+- id: '1626897113672'
+  alias: Cancel iBBQ Timer
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.ibbqtimeswitch
+    to: 'off'
+  condition: []
+  action:
+  - service: timer.cancel
+    target:
+      entity_id: timer.ibbq_timer
+  mode: single
+#
+# Play announcement on Alexa's if any of the probes reaches the set temperature
+#
+- id: '1626904362258'
+  alias: iBBQ Probe Alarm
+  description: ''
+  trigger:
+  - platform: template
+    value_template: "{% if states('sensor.ibbq_probe_1') != 'unknown' and states('sensor.ibbq_probe_1')\
+      \ | round | int > states('input_number.ibbq_target_probe_1') | round | int %}\n\
+      \  true\n{% elif states('sensor.ibbq_probe_2') != 'unknown' and states('sensor.ibbq_probe_2')\
+      \ | round | int > states('input_number.ibbq_target_probe_2') | round | int %}\n\
+      \  true\n{% elif states('sensor.ibbq_probe_3') != 'unknown' and states('sensor.ibbq_probe_3')\
+      \ | round | int > states('input_number.ibbq_target_probe_3') | round | int %}\n\
+      \  true\n{% elif states('sensor.ibbq_probe_4') != 'unknown' and states('sensor.ibbq_probe_4')\
+      \ | round | int > states('input_number.ibbq_target_probe_4') | round | int %}\n\
+      \  true\n{% endif %}"
+  condition:
+  - condition: state
+    entity_id: binary_sensor.ibbq_power
+    state: 'on'
+  action:
+  - service: media_player.play_media
+    data:
+      media_content_id: air_horn_03
+      media_content_type: sound
+    target:
+      entity_id:
+      - media_player.deck_alexa
+      - media_player.kitchen_alexa
+      - media_player.stereo_alexa
+  - service: notify.alexa_media_stereo_alexa
+    data:
+      data:
+        type: tts
+      message: i B B Q temperature probe warning
+  - service: notify.alexa_media_deck_alexa
+    data:
+      message: i B B Q temperature probe warning
+      data:
+        type: tts
+  - service: notify.alexa_media_kitchen_alexa
+    data:
+      message: i B B Q temperature probe warning
+      data:
+        type: tts
+  mode: single
+#
+# Play announcement on Alexa's and cell phone if the check timer is finished
+#
+- id: '1626908831776'
+  alias: iBBQ Timer Announcement
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: timer.ibbq_timer
+    from: active
+    to: idle
+  condition: []
+  action:
+  - service: media_player.play_media
+    data:
+      media_content_id: air_horn_03
+      media_content_type: sound
+    target:
+      entity_id:
+      - media_player.deck_alexa
+      - media_player.kitchen_alexa
+      - media_player.stereo_alexa
+  - service: notify.mobile_app_sm_g955u
+    data:
+      message: The i B B Q timer is finshed
+      title: iBBQ Update Status
+  - service: notify.alexa_media_deck_alexa
+    data:
+      message: The i B B Q timer is finshed
+      title: IBBQ Timer
+      data:
+        type: tts
+  - service: notify.alexa_media_stereo_alexa
+    data:
+      message: The i B B Q timer is finshed
+      title: IBBQ Timer
+      data:
+        type: tts
+  - service: notify.alexa_media_kitchen_alexa
+    data:
+      message: The i B B Q timer is finshed
+      title: IBBQ Timer
+      data:
+        type: tts
+  - service: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.ibbqtimeswitch
+  mode: single
+#
+# Adjust max value for probes if a specific meat and temperature is selected
+# 
+- id: '1626988470201'
+  alias: iBBQ Meat and Temp
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_select.meat_types
+  - platform: state
+    entity_id: input_select.meat_temps
+  condition: []
+  action:
+  - service: var.set
+    data:
+      entity_id: var.meatmaptemp
+  - service: input_number.set_value
+    target:
+      entity_id:
+      - input_number.ibbq_target_probe_1
+      - input_number.ibbq_target_probe_2
+      - input_number.ibbq_target_probe_3
+      - input_number.ibbq_target_probe_4
+    data:
+      value: '{{states.var.meatmaptemp.state}}'
+  mode: single

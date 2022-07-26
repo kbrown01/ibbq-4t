@@ -1,0 +1,52 @@
+meatmaptemp:
+  tracked_entity_id:
+    - input_select.meat_type
+    - input_select.meat_temps
+  value_template: >
+     {% set tartemp = {
+        "Poultry": {
+            "Rare": 150,
+            "Medium-Rare": 150,
+            "Medium": 155,
+            "Medium-Well": 160,
+            "Well": 165
+        },
+        "Pig": {
+            "Rare": 140,
+            "Medium-Rare": 145,
+            "Medium": 160,
+            "Medium-Well": 165,
+            "Well": 170
+        },
+        "Lamb": {
+            "Rare": 140,
+            "Medium-Rare": 145,
+            "Medium": 160,
+            "Medium-Well": 165,
+            "Well": 170
+        },
+        "Beef": {
+            "Rare": 120,
+            "Medium-Rare": 130,
+            "Medium": 135,
+            "Medium-Well": 145,
+            "Well": 155
+        },
+        "Venison": {
+            "Rare": 120,
+            "Medium-Rare": 130,
+            "Medium": 135,
+            "Medium-Well": 145,
+            "Well": 155
+        },
+        "Alligator": {
+            "Rare": 140,
+            "Medium-Rare": 145,
+            "Medium": 160,
+            "Medium-Well": 165,
+            "Well": 170
+        }
+     } %}
+     {% set meattype = states.input_select.meat_types.state %}
+     {% set meattemp = states.input_select.meat_temps.state %}
+     {{ tartemp[meattype][meattemp] | int }}
