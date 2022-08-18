@@ -161,9 +161,6 @@
     entity_id: input_select.meat_temps
   condition: []
   action:
-  - service: var.set
-    data:
-      entity_id: var.meatmaptemp
   - service: input_number.set_value
     target:
       entity_id:
@@ -172,5 +169,5 @@
       - input_number.ibbq_target_probe_3
       - input_number.ibbq_target_probe_4
     data:
-      value: '{{states.var.meatmaptemp.state}}'
+      value: '{{states.sensor.meatmaptemp.state}}'
   mode: single

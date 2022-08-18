@@ -10,7 +10,7 @@ input_boolean: !include input_boolean.yaml
 input_number: !include input_number.yaml
 input_select: !include input_select.yaml
 timer: !include timers.yaml
-var: !include vars.yaml
+template: !include template.yaml
 
 ```
 
@@ -28,4 +28,6 @@ Of course, there are many things one must do first. My implementation uses the L
 ![iBBQ_entities.png](iBBQ_entities.png)
 
 The remainder of the files in this repository are the various entities for selecting meat/doneness, and automations that do various things like change all values when something changes as well as sending announcments to cell and/or Alexa. The file "Lovelace_Panel.yaml" is only the tab containing all the cards. There are some custom components used in this so you may need to change it or install these if you do not have them.
+
+The original implementation used vars and that has been removed in recent Home Assistant update. This has been replaced by a template sensor now.
 
